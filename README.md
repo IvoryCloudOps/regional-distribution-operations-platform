@@ -710,31 +710,71 @@ regional-distribution-operations-platform/
 
 ---
 
-# 🚧 Current Progress
+## 🚧 Current Progress
+
+### Architecture & Design
 
 * [x] Business scenario defined
 * [x] Architecture requirements defined
-* [x] Access model selected
-* [x] Two-AZ design selected
+* [x] Internal access model selected
+* [x] Two-AZ architecture selected
 * [x] EC2/Linux compute model selected
 * [x] Relational data model selected
 * [x] Scaling strategy defined
-* [x] Single-NAT cost tradeoff defined
-* [ ] Terraform network foundation
-* [ ] Security groups
-* [ ] EC2 application tier
-* [ ] Application Load Balancer
-* [ ] RDS
-* [ ] S3
-* [ ] Systems Manager
-* [ ] CloudWatch monitoring
-* [ ] SNS alerting
+* [x] Single-NAT cost/resilience tradeoff documented
+
+### Networking & Security
+
+* [x] Terraform network foundation
+* [x] VPC and six-subnet architecture
+* [x] Internet Gateway
+* [x] Single NAT Gateway
+* [x] Public/private route tables
+* [x] Three-tier security groups
+* [ ] AWS Client VPN
+
+### Compute & Load Balancing
+
+* [x] EC2 IAM instance role
+* [x] Systems Manager access
+* [x] Amazon Linux 2023 Launch Template
+* [x] Auto Scaling Group
+* [x] Multi-AZ EC2 application tier
+* [x] EC2 user-data bootstrap
+* [x] Auto Scaling instance refresh
+* [x] Internal Application Load Balancer
+* [x] Target group and health checks
+* [x] ASG-to-ALB integration
+
+### Data & Storage
+
+* [ ] Amazon RDS
+* [ ] Amazon S3
 * [ ] Secrets Manager
-* [ ] CI/CD
+
+### Monitoring & Operations
+
+* [ ] CloudWatch monitoring
+* [ ] CloudWatch Logs
+* [ ] SNS alerting
+* [ ] Scheduled Auto Scaling
+* [ ] Dynamic Auto Scaling
 * [ ] First operational incident
 * [ ] Backup/recovery exercise
+
+### Automation & Delivery
+
+* [ ] GitHub CI/CD
+* [ ] GitHub Actions + Terraform validation/plan
+* [ ] AWS OIDC authentication
 * [ ] Python/Boto3 automation
-* [ ] Docker/ECS evolution
+
+### Future Evolution
+
+* [ ] Docker containerization
+* [ ] Amazon ECR
+* [ ] ECS/Fargate migration
+
 
 ---
 
