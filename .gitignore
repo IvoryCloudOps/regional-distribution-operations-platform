@@ -76,3 +76,7 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+certificates/*.key
+certificates/*.csr
+certificates/*.srl
