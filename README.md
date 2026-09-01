@@ -712,29 +712,78 @@ regional-distribution-operations-platform/
 
 # 🚧 Current Progress
 
-* [x] Business scenario defined
-* [x] Architecture requirements defined
-* [x] Access model selected
-* [x] Two-AZ design selected
-* [x] EC2/Linux compute model selected
-* [x] Relational data model selected
-* [x] Scaling strategy defined
-* [x] Single-NAT cost tradeoff defined
-* [ ] Terraform network foundation
-* [ ] Security groups
-* [ ] EC2 application tier
-* [ ] Application Load Balancer
-* [ ] RDS
-* [ ] S3
-* [ ] Systems Manager
-* [ ] CloudWatch monitoring
-* [ ] SNS alerting
-* [ ] Secrets Manager
-* [ ] CI/CD
-* [ ] First operational incident
-* [ ] Backup/recovery exercise
-* [ ] Python/Boto3 automation
-* [ ] Docker/ECS evolution
+- [x] Business scenario defined
+- [x] Architecture requirements defined
+- [x] Access model selected
+- [x] Two-AZ design selected
+- [x] EC2/Linux compute model selected
+- [x] Relational data model selected
+- [x] Scaling strategy defined
+- [x] Single-NAT cost tradeoff defined
+
+## 🌐 Networking & Access
+- [x] Terraform network foundation
+- [x] VPC and six-subnet architecture
+- [x] Internet Gateway
+- [x] Single NAT Gateway
+- [x] Public, application, and database route tables
+- [x] Security groups
+- [x] AWS Client VPN infrastructure
+- [ ] Local Client VPN connection troubleshooting
+
+## 🖥️ Compute & Load Balancing
+- [x] EC2 application tier
+- [x] Amazon Linux 2023 launch template
+- [x] Auto Scaling Group
+- [x] Multi-AZ application instances
+- [x] Systems Manager access
+- [x] Application bootstrap with user data
+- [x] Internal Application Load Balancer
+- [x] Target group and health checks
+- [x] ASG integration with ALB
+
+## 🗄️ Data & Storage
+- [x] RDS MySQL
+- [x] Multi-AZ RDS deployment
+- [x] Private database subnet group
+- [x] RDS-managed Secrets Manager credentials
+- [x] S3 application storage
+- [x] S3 encryption
+- [x] S3 versioning
+- [x] S3 public-access blocking
+
+## 🔐 IAM & Security
+- [x] EC2 IAM role
+- [x] Systems Manager permissions
+- [x] Least-privilege S3 application permissions
+- [x] Least-privilege Secrets Manager read permissions
+- [ ] Application retrieval of database secret
+
+## ⚙️ Terraform & CI/CD
+- [x] Terraform-managed infrastructure
+- [x] GitHub repository structure
+- [x] Terraform CI workflow
+- [x] Automated Terraform formatting check
+- [x] Automated Terraform validation
+- [ ] Remote Terraform state
+- [ ] GitHub Actions AWS OIDC authentication
+- [ ] Automated Terraform plan
+- [ ] Controlled Terraform apply workflow
+
+## 📊 Operations
+- [ ] CloudWatch monitoring
+- [ ] SNS alerting
+- [ ] Scheduled Auto Scaling
+- [ ] Dynamic Auto Scaling
+- [ ] First operational incident
+- [ ] Runbooks
+- [ ] Backup/recovery exercise
+- [ ] Python/Boto3 automation
+
+## 📦 Future Evolution
+- [ ] Docker containerization
+- [ ] Amazon ECR
+- [ ] ECS deployment
 
 ---
 
