@@ -15,10 +15,11 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   terraform-checks:
-    name: Terraform Checks
+    name: Terraform Checks & Plan
     runs-on: ubuntu-latest
 
     defaults:
@@ -29,6 +30,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::075723833258:role/github-actions-oidc-role
+          aws-region: us-east-1
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -36,7 +43,10 @@ jobs:
         run: terraform fmt -check -recursive
 
       - name: Terraform Init
-        run: terraform init -backend=false
+        run: terraform init
 
       - name: Terraform Validate
         run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -no-color
