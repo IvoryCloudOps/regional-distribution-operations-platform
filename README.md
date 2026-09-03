@@ -1,4 +1,4 @@
-🚚 Regional Distribution Operations Platform
+- #🚚 Regional Distribution Operations Platform
 
 > **Status:** In Progress
 > **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • CI/CD • Monitoring • Troubleshooting
