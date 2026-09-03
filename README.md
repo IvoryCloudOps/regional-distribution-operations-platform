@@ -1,6 +1,7 @@
-- #🚚 Regional Distribution Operations Platform
+# 🚚 Regional Distribution Operations Platform
 
 > **Status:** In Progress
+
 > **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • CI/CD • Monitoring • Troubleshooting
 
 A hands-on cloud engineering portfolio project that simulates the AWS infrastructure behind a regional distribution company’s internal order and inventory platform.
