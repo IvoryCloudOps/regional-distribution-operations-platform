@@ -1,9 +1,4 @@
-You're right. The problem was that I used a normal triple-backtick code block while the README itself contains triple-backtick blocks, which caused it to break apart.
-
-Below is the **entire README inside one single copy-and-paste box** using a four-backtick outer block so nothing gets split.
-
-````markdown
-# 🚚 Regional Distribution Operations Platform
+🚚 Regional Distribution Operations Platform
 
 > **Status:** In Progress
 > **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • CI/CD • Monitoring • Troubleshooting
