@@ -1,28 +1,57 @@
 # 🚚 Regional Distribution Operations Platform
 
-> **Status:** Completed (v1.0 Operational Infrastructure)  
-> **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • Observability • CI/CD • Disaster Recovery
+> **Status:** In Progress
 
-A hands-on cloud engineering portfolio project that implements and operates the secure AWS cloud infrastructure behind a regional distribution company’s internal operations platform.
+> **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • CI/CD • Monitoring • Troubleshooting
 
-The application itself is intentionally lightweight to focus on realistic cloud architecture, infrastructure as code, observability, resilience, and operational management.
+A hands-on cloud engineering portfolio project that simulates the AWS infrastructure behind a regional distribution company’s internal order and inventory platform.
+
+The goal is not to build a huge warehouse-management application. The application itself is intentionally lightweight.
+
+The real focus is the infrastructure and operations work around it:
+
+* designing the AWS architecture
+* provisioning it with Terraform
+* operating Linux workloads
+* securing private infrastructure
+* monitoring system health
+* automating infrastructure changes
+* troubleshooting infrastructure and application issues
+* testing recovery procedures
 
 ---
 
-## 🎯 Core Engineering Scope
+## 🎯 Project Goal
 
-* **Cloud Provider & Region:** AWS (`us-east-1`, 2 Availability Zones)
-* **Infrastructure as Code:** Terraform with S3 remote backend and native state locking
-* **Networking:** 6-subnet tiered VPC architecture with single NAT cost optimization
-* **Compute Tier:** Private Amazon Linux 2023 EC2 instances in an Auto Scaling Group
-* **Load Balancing:** Internal Application Load Balancer in private application subnets
-* **Storage & Data:** Multi-AZ Amazon RDS MySQL & encrypted S3 object storage
-* **Secrets Management:** AWS Secrets Manager for zero-hardcoded DB credentials
-* **Administration:** AWS Systems Manager (SSM) Session Manager (no open SSH ports)
-* **Observability:** Amazon CloudWatch metrics, alarms, and Amazon SNS notifications
-* **Scaling Strategy:** Dynamic target-tracking (CPU) & Georgia business-hours scheduled scaling
-* **Automation & DR:** Boto3 operational audit tooling and tested RDS snapshot recovery runbook
-* **CI/CD:** GitHub Actions with OIDC temporary credential exchange for Terraform validation and plan
+This project is designed around skills that repeatedly appear in junior and associate-level cloud engineering, AWS administration, CloudOps, and DevOps job postings.
+
+The objective is to demonstrate practical experience with a strong concentration of:
+
+* AWS
+* Terraform / Infrastructure as Code
+* VPC networking
+* EC2
+* Linux administration
+* IAM
+* Application Load Balancing
+* Auto Scaling
+* RDS
+* S3
+* Systems Manager
+* CloudWatch
+* SNS
+* Secrets Manager
+* Git / GitHub
+* CI/CD
+* backup and recovery
+* troubleshooting
+* scaling
+* cost-aware architecture
+* Python/Boto3 automation
+
+The goal is to demonstrate the ability to:
+
+> **Design, build, operate, troubleshoot, and evolve an AWS-hosted business workload.**
 
 ---
 
@@ -38,27 +67,50 @@ Approximately **200–300 employees** use an internal web application throughout
 * warehouse operations
 * basic internal reporting
 
-The platform experiences predictable operational volume during Georgia business hours (07:00 – 18:30 Eastern Time) with month-end peaks and occasional fulfillment spikes.
+The platform is used consistently throughout the business day and experiences heavier demand during:
+
+* month-end processing
+* busy fulfillment periods
+* seasonal demand increases
+
+The company wants to migrate this system into AWS while improving:
+
+* reliability
+* security
+* scalability
+* visibility
+* recoverability
+* infrastructure consistency
+
+The first design runs in **one AWS Region across two Availability Zones**.
 
 ---
 
-# 🔐 Access Model & Security
+# 🔐 Access Model
 
-The platform is **internal-only** and not exposed directly to the public internet:
+The application is **internal-only**.
+
+It should not be directly available to the general internet.
+
+Remote employees access the environment through:
+
+**AWS Client VPN**
+
+Primary application flow:
 
 ```text
-Authorized Employee (Remote / Warehouse)
-                 ↓
-          AWS Client VPN (Split-Tunnel)
-                 ↓
-  Internal Application Load Balancer (Private App Subnets)
-                 ↓
-  Private Linux EC2 Tier (Managed via ASG & SSM)
-                 ↓
-  Private Amazon RDS MySQL (Multi-AZ)
+Authorized Employee
+        ↓
+AWS Client VPN
+        ↓
+Internal Application Load Balancer
+        ↓
+Private Linux EC2 Application Tier
+        ↓
+Amazon RDS
 ```
 
-> **Client VPN Note:** AWS-side Client VPN infrastructure (endpoint, certificates, security groups, and subnet associations) is fully deployed; local client mutual-TLS connection is pending local client certificate setup.
+The application servers and database remain private.
 
 ---
 
@@ -147,15 +199,12 @@ The EC2 instances:
 * are managed through an Auto Scaling Group
 * are administered through AWS Systems Manager
 
-This design intentionally creates real Linux and cloud-operations practice around:
+This design intentionally creates hands-on Linux and cloud-operations practice around:
 
-* services
-* processes
-* patching
-* logs
+* systemd service management
+* application startup and bootstrap
+* logs and journal investigation
 * permissions
-* CPU/memory
-* disk usage
 * networking
 * application health
 * troubleshooting
@@ -170,8 +219,7 @@ The workload includes both predictable and unpredictable demand.
 
 Scheduled scaling is used for known traffic increases such as:
 
-* month-end processing
-* predictable fulfillment peaks
+* weekday business-hour demand
 
 ```text
 Known Demand Increase
@@ -185,11 +233,10 @@ Capacity Added Before Traffic Arrives
 
 Dynamic scaling is used for unexpected demand increases.
 
-Potential signals include:
+The implemented dynamic scaling policy uses:
 
-* EC2 CPU utilization
-* ALB request count per target
-* application load metrics
+* Auto Scaling Group average EC2 CPU utilization
+* a 60% target-tracking threshold
 
 ```text
 Unexpected Demand
@@ -218,7 +265,6 @@ The workload includes relational data such as:
 * inventory
 * warehouses
 * shipments
-* operational transaction history
 
 Example relationship:
 
@@ -240,21 +286,18 @@ RDS is deployed privately and uses a Multi-AZ configuration for availability.
 
 # 📦 Object Storage
 
-**Amazon S3** is used for non-transactional objects such as:
+**Amazon S3** is used by the project for:
 
-* reports
-* shipping documents
-* exported data
-* inventory files
-* operational documents
-* application artifacts
-* archived logs
+* application release artifacts used during EC2 bootstrap
+* generated inventory report exports
+* generated order report exports
 
 The S3 bucket is:
 
 * private
 * encrypted
-* versioned where appropriate
+* versioned
+* protected by S3 public-access blocking
 
 ---
 
@@ -299,6 +342,8 @@ Database credentials and sensitive configuration should not live directly in:
 * EC2 configuration
 
 **AWS Secrets Manager** stores sensitive values required by the application.
+
+The application retrieves the RDS-managed database credentials from Secrets Manager at runtime rather than storing database credentials directly in source code.
 
 ---
 
@@ -354,98 +399,61 @@ A higher-availability production design could use one NAT Gateway per AZ.
 
 # 📊 Monitoring & Observability
 
-**Amazon CloudWatch** provides centralized monitoring and logging.
+**Amazon CloudWatch** provides infrastructure metric monitoring and alarms for the deployed platform.
 
-## EC2
+The implemented Terraform monitoring covers:
 
-Monitor:
+* **Application Load Balancer:** unhealthy target count
+* **EC2 / Auto Scaling Group:** average CPU utilization, with an alarm at 80%
+* **Amazon RDS:** CPU utilization, with an alarm at 80%
+* **Amazon RDS:** free storage space, with an alarm when available storage falls to 5 GB or less
 
-* CPU utilization
-* status checks
-* memory
-* disk usage
-* application service health
-* Linux/system logs
-* application logs
-
-## Application Load Balancer
-
-Monitor:
-
-* request count
-* target response time
-* unhealthy target count
-* HTTP error behavior
-
-## RDS
-
-Monitor:
-
-* CPU
-* database connections
-* storage
-* database availability
-* performance indicators
-
-## Auto Scaling
-
-Monitor:
-
-* desired capacity
-* current capacity
-* scaling activity
+These alarms are defined in `terraform/monitoring.tf`.
 
 ---
 
 # 🚨 Alerting
 
-CloudWatch alarms publish to:
-
-**Amazon SNS**
+CloudWatch alarms publish notifications to an **Amazon SNS** topic.
 
 ```text
 Problem Detected
       ↓
 CloudWatch Alarm
       ↓
-SNS
+Amazon SNS
       ↓
-Operations Notification
+Operations Email Notification
 ```
 
-Potential alerts include:
+Implemented alerts include:
 
-* high EC2 CPU
 * unhealthy ALB targets
-* failed EC2 status checks
-* application errors
-* database issues
-* unusual resource utilization
+* high EC2 / Auto Scaling Group CPU utilization
+* high RDS CPU utilization
+* low RDS free storage
 
 ---
 
 # 💽 Backup & Recovery
 
-The project includes real recovery testing rather than only configuring backups.
-
 ### Amazon RDS
 
-Configured recovery capabilities:
+Configured recovery capabilities include:
 
-* automated backups
-* snapshots
-* point-in-time recovery
-
-The snapshot recovery test restored a temporary `db.t3.micro` MySQL instance and initialized it in approximately 15-25 minutes. The temporary instance was deleted after validation.
+* 7-day automated backup retention
+* RDS snapshots
+* point-in-time recovery support within the backup-retention window
 
 ### Amazon S3
 
-Recovery capabilities:
+S3 versioning provides object-version history that can be used to recover overwritten or deleted objects.
 
-* versioning
-* recovery of overwritten/deleted objects
+RDS backup and recovery procedures are documented in:
 
-Backup and restore exercises will be documented as part of the operational work.
+```text
+docs/runbooks/rds_backup_recovery.md
+```
 
 ---
 
@@ -455,7 +463,7 @@ AWS infrastructure is provisioned using:
 
 **Terraform**
 
-Terraform will manage resources such as:
+Terraform manages resources such as:
 
 * VPC
 * subnets
@@ -480,106 +488,62 @@ Terraform will manage resources such as:
 
 # 🔄 CI/CD
 
-The project will use GitHub and GitHub Actions for infrastructure automation.
+The repository includes a GitHub Actions workflow for Terraform validation and planning.
 
-Planned flow:
+Implemented flow:
 
 ```text
-Developer
-   ↓
-Git Branch
-   ↓
-Pull Request
+Git Push / Pull Request
    ↓
 GitHub Actions
    ↓
-terraform fmt
+OIDC Authentication to AWS
+   ↓
+terraform fmt -check
+   ↓
+terraform init
+   ↓
 terraform validate
-tflint
-security scan
+   ↓
 terraform plan
-   ↓
-Review
-   ↓
-Controlled Apply
 ```
 
-GitHub Actions will eventually authenticate to AWS using OIDC rather than long-lived AWS access keys.
+GitHub Actions uses AWS OIDC federation for temporary credentials rather than long-lived AWS access keys.
+
+The project does **not** currently include an automated Terraform apply workflow.
 
 ---
 
 # 🐧 Linux Operations
 
-The Linux EC2 tier is intentionally included so the project provides real operating-system administration and troubleshooting practice.
+The private Amazon Linux 2023 EC2 tier provides hands-on operating-system and application operations experience.
 
-Areas include:
+Implemented areas include:
 
-* systemd services
-* journal/log investigation
-* package management
-* patching
-* permissions
-* process management
-* CPU/memory troubleshooting
-* disk usage
-* network troubleshooting
-* application startup failures
+* systemd service management for the Flask application
+* package and dependency installation through EC2 bootstrap/user data
+* application startup and service troubleshooting
+* journal/system log investigation
+* network and application-health troubleshooting
+* Systems Manager administration without public SSH
 
 ---
 
-# 🧯 Incident Response
-
-Operational incidents will be introduced as soon as the first working infrastructure exists.
-
-Example scenarios:
-
-* unhealthy EC2 instance
-* high CPU
-* Linux service failure
-* disk/log growth
-* ALB health-check failure
-* security-group connectivity failure
-* Client VPN access failure
-* IAM/SSM permissions issue
-* RDS connectivity problem
-* Terraform configuration drift
-* failed application deployment
 # 🤖 Automation
 
-Later phases will introduce Python/Boto3 operational automation.
-
-Potential examples:
-
-* identify untagged AWS resources
-* audit security groups
-* check snapshot/backup status
-* inventory EC2 instances
-* report unused resources
-* validate operational compliance
-
-Automation should solve real operational problems rather than exist only as a resume checkbox.
-
----
-
-# 🐳 Container Evolution
-
-Containers are intentionally not part of the first application design.
-
-The EC2 tier is used first to develop Linux and host-level operations experience.
-
-A later evolution may be:
+The repository includes a Python/Boto3 operational audit script at:
 
 ```text
-Application
-   ↓
-Docker
-   ↓
-Amazon ECR
-   ↓
-Amazon ECS / Fargate
+scripts/platform_audit.py
 ```
 
-This migration can be introduced when containerization solves a real deployment or operational problem.
+The script checks:
+
+* Auto Scaling Group capacity and instance health
+* ALB target-group health
+* RDS database availability/status
+
+and reports an overall platform health state without hardcoded AWS credentials.
 
 ---
 
@@ -619,8 +583,6 @@ regional-distribution-operations-platform/
 ├── scripts/
 │
 ├── docs/
-│   ├── architecture/
-│   ├── adr/
 │   └── runbooks/
 │
 └── .github/
@@ -641,6 +603,7 @@ regional-distribution-operations-platform/
 - [x] Single-NAT cost tradeoff defined
 
 ## 🌐 Networking & Access
+
 - [x] Terraform network foundation
 - [x] VPC and six-subnet architecture
 - [x] Internet Gateway
@@ -648,9 +611,10 @@ regional-distribution-operations-platform/
 - [x] Public, application, and database route tables
 - [x] Security groups
 - [x] AWS Client VPN infrastructure
-- [ ] Local Client VPN connection troubleshooting
+- [x] Local Client VPN connection troubleshooting
 
 ## 🖥️ Compute & Load Balancing
+
 - [x] EC2 application tier
 - [x] Amazon Linux 2023 launch template
 - [x] Auto Scaling Group
@@ -662,6 +626,7 @@ regional-distribution-operations-platform/
 - [x] ASG integration with ALB
 
 ## 🗄️ Data & Storage
+
 - [x] RDS MySQL
 - [x] Multi-AZ RDS deployment
 - [x] Private database subnet group
@@ -672,34 +637,32 @@ regional-distribution-operations-platform/
 - [x] S3 public-access blocking
 
 ## 🔐 IAM & Security
+
 - [x] EC2 IAM role
 - [x] Systems Manager permissions
 - [x] Least-privilege S3 application permissions
 - [x] Least-privilege Secrets Manager read permissions
-- [ ] Application retrieval of database secret
+- [x] Application retrieval of database secret
 
 ## ⚙️ Terraform & CI/CD
+
 - [x] Terraform-managed infrastructure
 - [x] GitHub repository structure
 - [x] Terraform CI workflow
 - [x] Automated Terraform formatting check
 - [x] Automated Terraform validation
-- [x] Remote S3 Terraform state with S3-native state locking
-- [x] GitHub Actions AWS OIDC authentication & IAM role configuration
-- [ ] Controlled Terraform apply workflow
+- [x] Remote Terraform state
+- [x] GitHub Actions AWS OIDC authentication
+- [x] Automated Terraform plan
 
-## 📊 Operations & Observability
-- [x] CloudWatch monitoring (ALB target health, ASG CPU, RDS CPU & Free Storage)
-- [x] SNS alerting topic
-- [x] Scheduled Auto Scaling (business-hour scaling)
-- [x] Dynamic Auto Scaling (target-tracking CPU policy)
-- [x] Standardized RDS Backup & Recovery runbook
-- [x] Python/Boto3 operational platform audit script (`scripts/platform_audit.py`)
+## 📊 Operations
 
-## 📦 Future Evolution
-- [ ] Docker containerization
-- [ ] Amazon ECR
-- [ ] ECS deployment
+- [x] CloudWatch monitoring
+- [x] SNS alerting
+- [x] Scheduled Auto Scaling
+- [x] Dynamic Auto Scaling
+- [x] Runbooks
+- [x] Python/Boto3 automation
 
 ---
 
@@ -714,8 +677,6 @@ The engineering around it is the point.
 Every AWS service should answer:
 
 > **What business, reliability, security, operational, or engineering requirement made this resource necessary?**
-
-The project will evolve over time as additional cloud-engineering and operations concepts are introduced.
 
 The goal is not to collect AWS services.
 
