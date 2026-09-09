@@ -1,6 +1,8 @@
 # 🚚 Regional Distribution Operations Platform
 
-> **Status:** In Progress
+> **Status:** Completed
+
+> **Environment status:** The AWS infrastructure was fully deployed, validated, and tested during development, then intentionally destroyed after project completion to prevent ongoing cloud costs. The repository preserves the Terraform, application code, automation, runbooks, and CI/CD configuration required to document and reproduce the environment.
 
 > **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • CI/CD • Monitoring • Troubleshooting
 
@@ -509,6 +511,8 @@ terraform plan
 ```
 
 GitHub Actions uses AWS OIDC federation for temporary credentials rather than long-lived AWS access keys.
+
+> **CI note:** AWS-authenticated Terraform plan workflows were validated while the environment and GitHub OIDC role were active. Because the AWS environment was intentionally destroyed after validation, later workflow runs that require AWS authentication will fail unless the supporting AWS resources are recreated.
 
 The project does **not** currently include an automated Terraform apply workflow.
 
