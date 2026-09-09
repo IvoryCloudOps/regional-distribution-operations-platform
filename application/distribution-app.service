@@ -1,0 +1,17 @@
+[Unit]
+Description=Regional Distribution Operations Platform - Flask application
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/distribution-app
+EnvironmentFile=/etc/distribution-app.env
+ExecStart=/opt/distribution-app/venv/bin/gunicorn --workers 2 --bind 0.0.0.0:80 --access-logfile - --error-logfile - app:app
+Restart=on-failure
+RestartSec=5
+# Binds to privileged port 80 to match the existing ALB target group / security group.
+User=root
+
+[Install]
+WantedBy=multi-user.target

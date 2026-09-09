@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+
+<div class="metric-grid">
+  <div class="metric-card"><div class="metric-value">{{ metrics.orders_today }}</div><div class="metric-label">Orders Today</div></div>
+  <div class="metric-card"><div class="metric-value">{{ metrics.orders_this_month }}</div><div class="metric-label">Orders This Month</div></div>
+  <div class="metric-card"><div class="metric-value">{{ metrics.open_orders }}</div><div class="metric-label">Open Orders</div></div>
+  <div class="metric-card"><div class="metric-value">{{ metrics.completed_orders }}</div><div class="metric-label">Completed Orders</div></div>
+  <div class="metric-card"><div class="metric-value">{{ metrics.active_shipments }}</div><div class="metric-label">Active Shipments</div></div>
+  <div class="metric-card"><div class="metric-value">{{ metrics.delayed_shipments }}</div><div class="metric-label">Delayed Shipments</div></div>
+  <div class="metric-card"><div class="metric-value">{{ metrics.low_stock_skus }}</div><div class="metric-label">Low-Stock SKUs</div></div>
+</div>
+
+<h2>Inventory Units by Warehouse</h2>
+<table class="data-table">
+  <thead><tr><th>Warehouse</th><th>Total Units</th></tr></thead>
+  <tbody>
+    {% for row in inventory_by_warehouse %}
+    <tr><td>{{ row.warehouse }}</td><td>{{ row.units }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Export Reports</h2>
+{% if s3_enabled %}
+<p>Exports are written to the project's S3 bucket under the <code>reports/</code> prefix and a temporary download link is generated.</p>
+<div class="toolbar">
+  <button type="button" class="export-btn" data-report="inventory">Export Inventory CSV</button>
+  <button type="button" class="export-btn" data-report="orders">Export Orders CSV</button>
+</div>
+<p id="export-result"></p>
+{% else %}
+<p class="error">S3_BUCKET is not configured on this instance; CSV export is disabled.</p>
+{% endif %}
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

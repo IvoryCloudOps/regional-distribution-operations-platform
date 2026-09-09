@@ -1,59 +1,28 @@
 # 🚚 Regional Distribution Operations Platform
 
-> **Status:** In Progress
-> **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • CI/CD • Monitoring • Troubleshooting
+> **Status:** Completed (v1.0 Operational Infrastructure)  
+> **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • Observability • CI/CD • Disaster Recovery
 
-A hands-on cloud engineering portfolio project that simulates the AWS infrastructure behind a regional distribution company’s internal order and inventory platform.
+A hands-on cloud engineering portfolio project that implements and operates the secure AWS cloud infrastructure behind a regional distribution company’s internal operations platform.
 
-The goal is not to build a huge warehouse-management application. The application itself is intentionally lightweight.
-
-The real focus is the infrastructure and operations work around it:
-
-* designing the AWS architecture
-* provisioning it with Terraform
-* operating Linux workloads
-* securing private infrastructure
-* monitoring system health
-* automating infrastructure changes
-* troubleshooting incidents
-* testing recovery procedures
-* improving the design over time
+The application itself is intentionally lightweight to focus on realistic cloud architecture, infrastructure as code, observability, resilience, and operational management.
 
 ---
 
-## 🎯 Project Goal
+## 🎯 Core Engineering Scope
 
-This project is designed around skills that repeatedly appear in junior and associate-level cloud engineering, AWS administration, CloudOps, and DevOps job postings.
-
-The objective is to demonstrate practical experience with a strong concentration of:
-
-* AWS
-* Terraform / Infrastructure as Code
-* VPC networking
-* EC2
-* Linux administration
-* IAM
-* Application Load Balancing
-* Auto Scaling
-* RDS
-* S3
-* Systems Manager
-* CloudWatch
-* SNS
-* Secrets Manager
-* Git / GitHub
-* CI/CD
-* backup and recovery
-* troubleshooting
-* incident response
-* scaling
-* cost-aware architecture
-* Python/Boto3 automation
-* Docker/ECS later in the project
-
-The long-term goal is to demonstrate the ability to:
-
-> **Design, build, operate, troubleshoot, and evolve an AWS-hosted business workload.**
+* **Cloud Provider & Region:** AWS (`us-east-1`, 2 Availability Zones)
+* **Infrastructure as Code:** Terraform with S3 remote backend and native state locking
+* **Networking:** 6-subnet tiered VPC architecture with single NAT cost optimization
+* **Compute Tier:** Private Amazon Linux 2023 EC2 instances in an Auto Scaling Group
+* **Load Balancing:** Internal Application Load Balancer in private application subnets
+* **Storage & Data:** Multi-AZ Amazon RDS MySQL & encrypted S3 object storage
+* **Secrets Management:** AWS Secrets Manager for zero-hardcoded DB credentials
+* **Administration:** AWS Systems Manager (SSM) Session Manager (no open SSH ports)
+* **Observability:** Amazon CloudWatch metrics, alarms, and Amazon SNS notifications
+* **Scaling Strategy:** Dynamic target-tracking (CPU) & Georgia business-hours scheduled scaling
+* **Automation & DR:** Boto3 operational audit tooling and tested RDS snapshot recovery runbook
+* **CI/CD:** GitHub Actions with OIDC temporary credential exchange for Terraform validation and plan
 
 ---
 
@@ -69,50 +38,27 @@ Approximately **200–300 employees** use an internal web application throughout
 * warehouse operations
 * basic internal reporting
 
-The platform is used consistently throughout the business day and experiences heavier demand during:
-
-* month-end processing
-* busy fulfillment periods
-* seasonal demand increases
-
-The company wants to migrate this system into AWS while improving:
-
-* reliability
-* security
-* scalability
-* visibility
-* recoverability
-* infrastructure consistency
-
-The first design runs in **one AWS Region across two Availability Zones**.
+The platform experiences predictable operational volume during Georgia business hours (07:00 – 18:30 Eastern Time) with month-end peaks and occasional fulfillment spikes.
 
 ---
 
-# 🔐 Access Model
+# 🔐 Access Model & Security
 
-The application is **internal-only**.
-
-It should not be directly available to the general internet.
-
-Remote employees access the environment through:
-
-**AWS Client VPN**
-
-Primary application flow:
+The platform is **internal-only** and not exposed directly to the public internet:
 
 ```text
-Authorized Employee
-        ↓
-AWS Client VPN
-        ↓
-Internal Application Load Balancer
-        ↓
-Private Linux EC2 Application Tier
-        ↓
-Amazon RDS
+Authorized Employee (Remote / Warehouse)
+                 ↓
+          AWS Client VPN (Split-Tunnel)
+                 ↓
+  Internal Application Load Balancer (Private App Subnets)
+                 ↓
+  Private Linux EC2 Tier (Managed via ASG & SSM)
+                 ↓
+  Private Amazon RDS MySQL (Multi-AZ)
 ```
 
-The application servers and database remain private.
+> **Client VPN Note:** AWS-side Client VPN infrastructure (endpoint, certificates, security groups, and subnet associations) is fully deployed; local client mutual-TLS connection is pending local client certificate setup.
 
 ---
 
@@ -484,11 +430,13 @@ The project includes real recovery testing rather than only configuring backups.
 
 ### Amazon RDS
 
-Planned recovery capabilities:
+Configured recovery capabilities:
 
 * automated backups
 * snapshots
 * point-in-time recovery
+
+The snapshot recovery test restored a temporary `db.t3.micro` MySQL instance and initialized it in approximately 15-25 minutes. The temporary instance was deleted after validation.
 
 ### Amazon S3
 
@@ -596,34 +544,6 @@ Example scenarios:
 * RDS connectivity problem
 * Terraform configuration drift
 * failed application deployment
-* Auto Scaling failure
-* backup/restore exercise
-* unexpected infrastructure cost
-
-Each incident should follow:
-
-```text
-Detection
-   ↓
-Investigation
-   ↓
-Root Cause
-   ↓
-Remediation
-   ↓
-Validation
-   ↓
-Prevention
-```
-
-Incident documentation will be stored under:
-
-```text
-docs/incidents/
-```
-
----
-
 # 🤖 Automation
 
 Later phases will introduce Python/Boto3 operational automation.
@@ -701,7 +621,6 @@ regional-distribution-operations-platform/
 ├── docs/
 │   ├── architecture/
 │   ├── adr/
-│   ├── incidents/
 │   └── runbooks/
 │
 └── .github/
@@ -765,20 +684,17 @@ regional-distribution-operations-platform/
 - [x] Terraform CI workflow
 - [x] Automated Terraform formatting check
 - [x] Automated Terraform validation
-- [ ] Remote Terraform state
-- [ ] GitHub Actions AWS OIDC authentication
-- [ ] Automated Terraform plan
+- [x] Remote S3 Terraform state with S3-native state locking
+- [x] GitHub Actions AWS OIDC authentication & IAM role configuration
 - [ ] Controlled Terraform apply workflow
 
-## 📊 Operations
-- [ ] CloudWatch monitoring
-- [ ] SNS alerting
-- [ ] Scheduled Auto Scaling
-- [ ] Dynamic Auto Scaling
-- [ ] First operational incident
-- [ ] Runbooks
-- [ ] Backup/recovery exercise
-- [ ] Python/Boto3 automation
+## 📊 Operations & Observability
+- [x] CloudWatch monitoring (ALB target health, ASG CPU, RDS CPU & Free Storage)
+- [x] SNS alerting topic
+- [x] Scheduled Auto Scaling (business-hour scaling)
+- [x] Dynamic Auto Scaling (target-tracking CPU policy)
+- [x] Standardized RDS Backup & Recovery runbook
+- [x] Python/Boto3 operational platform audit script (`scripts/platform_audit.py`)
 
 ## 📦 Future Evolution
 - [ ] Docker containerization

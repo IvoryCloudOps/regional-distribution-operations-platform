@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Warehouses{% endblock %}
+{% block content %}
+<h1>Warehouse Operations</h1>
+
+<table class="data-table">
+  <thead>
+    <tr><th>Warehouse</th><th>Location</th><th>Total Products</th><th>Total Units</th><th>Low-Stock Items</th><th>Active Orders</th><th>Outbound Shipments</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for w in warehouses %}
+    <tr>
+      <td>{{ w.name }}</td>
+      <td>{{ w.location }}</td>
+      <td>{{ w.total_products }}</td>
+      <td>{{ w.total_units }}</td>
+      <td>{{ w.low_stock_items }}</td>
+      <td>{{ w.active_orders }}</td>
+      <td>{{ w.outbound_shipments }}</td>
+      <td><a href="{{ url_for('warehouse_detail', warehouse_id=w.warehouse_id) }}">View Inventory</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
