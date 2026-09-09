@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}New Order{% endblock %}
+{% block content %}
+<h1>New Order</h1>
+
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+<form method="post">
+  <label>Customer</label>
+  <select name="customer_id" required>
+    <option value="">Select a customer&hellip;</option>
+    {% for c in customers %}
+    <option value="{{ c.customer_id }}">{{ c.name }}</option>
+    {% endfor %}
+  </select>
+
+  <h3>Line Items</h3>
+  <div id="line-items">
+    <div class="line-item">
+      <select name="product_id">
+        <option value="">Select a product&hellip;</option>
+        {% for p in products %}
+        <option value="{{ p.product_id }}">{{ p.sku }} - {{ p.name }} (${{ '%.2f'|format(p.unit_price) }})</option>
+        {% endfor %}
+      </select>
+      <input type="number" name="quantity" min="1" value="1" style="width:80px">
+    </div>
+  </div>
+  <button type="button" id="add-line-item">+ Add Item</button>
+
+  <div class="form-actions">
+    <button type="submit">Create Order</button>
+  </div>
+</form>
+
+<template id="line-item-template">
+  <div class="line-item">
+    <select name="product_id">
+      <option value="">Select a product&hellip;</option>
+      {% for p in products %}
+      <option value="{{ p.product_id }}">{{ p.sku }} - {{ p.name }} (${{ '%.2f'|format(p.unit_price) }})</option>
+      {% endfor %}
+    </select>
+    <input type="number" name="quantity" min="1" value="1" style="width:80px">
+  </div>
+</template>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

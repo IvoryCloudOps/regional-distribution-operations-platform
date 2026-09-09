@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<h1>Orders</h1>
+
+<div class="toolbar">
+  <form method="get" class="filter-form">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Statuses</option>
+      {% for s in statuses %}
+      <option value="{{ s }}" {{ 'selected' if status_filter == s }}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  <a class="button" href="{{ url_for('new_order') }}">+ New Order</a>
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr><th>Order #</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    {% for o in orders %}
+    <tr>
+      <td><a href="{{ url_for('order_detail', order_id=o.order_id) }}">{{ o.order_number }}</a></td>
+      <td>{{ o.customer_name }}</td>
+      <td>{{ o.order_date }}</td>
+      <td>{{ o.item_count }}</td>
+      <td>${{ '%.2f'|format(o.total_amount) }}</td>
+      <td><span class="badge badge-status">{{ o.status }}</span></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">No orders found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

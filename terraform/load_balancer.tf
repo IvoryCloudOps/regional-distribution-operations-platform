@@ -3,7 +3,7 @@ resource "aws_lb" "distribution_internal_alb" {
   internal           = true
   load_balancer_type = "application"
   security_groups    = [aws_security_group.distribution_alb_sg.id]
-  subnets            = [aws_subnet.distribution_public_a.id, aws_subnet.distribution_public_b.id]
+  subnets            = [aws_subnet.distribution_private_app_a.id, aws_subnet.distribution_private_app_b.id]
 
   tags = {
     Name        = "distribution-internal-alb"
@@ -20,7 +20,7 @@ resource "aws_lb_target_group" "distribution_app_tg" {
 
   health_check {
     enabled             = true
-    path                = "/"
+    path                = "/health"
     protocol            = "HTTP"
     port                = "traffic-port"
     interval            = 30

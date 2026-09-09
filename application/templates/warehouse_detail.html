@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Warehouse Detail{% endblock %}
+{% block content %}
+{% if not warehouse %}
+<h1>Warehouse Not Found</h1>
+{% else %}
+<h1>{{ warehouse.name }}</h1>
+<p>{{ warehouse.location }}</p>
+
+<table class="data-table">
+  <thead><tr><th>SKU</th><th>Product</th><th>Available</th><th>Reserved</th><th>Reorder Level</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for r in records %}
+    <tr>
+      <td>{{ r.sku }}</td>
+      <td>{{ r.product_name }}</td>
+      <td>{{ r.quantity_available }}</td>
+      <td>{{ r.quantity_reserved }}</td>
+      <td>{{ r.reorder_level }}</td>
+      <td><span class="badge badge-{{ r.stock_status|lower|replace(' ', '-') }}">{{ r.stock_status }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p><a href="{{ url_for('warehouses') }}">&larr; Back to Warehouses</a></p>
+{% endif %}
+{% endblock %}

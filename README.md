@@ -651,19 +651,18 @@ regional-distribution-operations-platform/
 - [x] Terraform CI workflow
 - [x] Automated Terraform formatting check
 - [x] Automated Terraform validation
-- [ ] Remote Terraform state
-- [ ] GitHub Actions AWS OIDC authentication
-- [ ] Automated Terraform plan
-- [ ] Controlled Terraform apply workflow
+- [x] Remote Terraform state
+- [x] GitHub Actions AWS OIDC authentication
+- [x] Automated Terraform plan
 
 ## 📊 Operations
 
 - [x] CloudWatch monitoring
 - [x] SNS alerting
 - [x] Scheduled Auto Scaling
-- [ ] Dynamic Auto Scaling
+- [x] Dynamic Auto Scaling
 - [x] Runbooks
-- [ ] Python/Boto3 automation
+- [x] Python/Boto3 automation
 
 ---
 

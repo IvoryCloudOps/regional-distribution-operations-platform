@@ -18,7 +18,14 @@ resource "aws_launch_template" "distribution_app" {
   image_id               = "ami-0fe74bfcad4fd6bd2"
   instance_type          = "t3.micro"
   update_default_version = true
-  user_data              = base64encode(file("${path.module}/scripts/app_user_data.sh"))
+  user_data = base64encode(templatefile("${path.module}/scripts/app_user_data.sh", {
+    db_secret_arn = aws_db_instance.distribution_mysql.master_user_secret[0].secret_arn
+    db_name       = aws_db_instance.distribution_mysql.db_name
+    db_host       = aws_db_instance.distribution_mysql.address
+    db_port       = aws_db_instance.distribution_mysql.port
+    s3_bucket     = aws_s3_bucket.distribution_bucket.id
+    aws_region    = "us-east-1"
+  }))
 
 
   iam_instance_profile {
@@ -47,6 +54,7 @@ resource "aws_autoscaling_group" "distribution_app" {
   desired_capacity          = 2
   max_size                  = 6
   vpc_zone_identifier       = [aws_subnet.distribution_private_app_a.id, aws_subnet.distribution_private_app_b.id]
+  target_group_arns         = [aws_lb_target_group.distribution_app_tg.arn]
   health_check_type         = "ELB"
   health_check_grace_period = 300
 
