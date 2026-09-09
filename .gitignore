@@ -76,3 +76,11 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Local project artifacts
+*.log
+distribution-app.zip
+ssm-*.json
+terraform/delete-markers.json
+terraform/delete-versions.json
+terraform/tfplan
