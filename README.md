@@ -4,87 +4,43 @@
 
 > **Environment status:** The AWS infrastructure was fully deployed, validated, and tested during development, then intentionally destroyed after project completion to prevent ongoing cloud costs. The repository preserves the Terraform, application code, automation, runbooks, and CI/CD configuration required to document and reproduce the environment.
 
-> **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • CI/CD • Monitoring • Troubleshooting
+Focus: AWS • Terraform • Linux • Networking • Cloud Operations • CI/CD • Monitoring • Troubleshooting
 
-A hands-on cloud engineering portfolio project that simulates the AWS infrastructure behind a regional distribution company’s internal order and inventory platform.
+A hands-on cloud engineering portfolio project that simulates the AWS infrastructure behind a regional distribution company's internal order and inventory platform. The application itself is intentionally lightweight — the real focus is the infrastructure and operations work around it.
+---
 
-The goal is not to build a huge warehouse-management application. The application itself is intentionally lightweight.
+## 🏗️ Architecture
 
-The real focus is the infrastructure and operations work around it:
 
-* designing the AWS architecture
-* provisioning it with Terraform
-* operating Linux workloads
-* securing private infrastructure
-* monitoring system health
-* automating infrastructure changes
-* troubleshooting infrastructure and application issues
-* testing recovery procedures
+
+
+
+
+
+Supporting services: Terraform, IAM, Systems Manager, CloudWatch, SNS, S3, Secrets Manager, NAT Gateway, Internet Gateway, GitHub Actions.
 
 ---
 
-## 🎯 Project Goal
+# 🧠 Key Decisions & Why
 
-This project is designed around skills that repeatedly appear in junior and associate-level cloud engineering, AWS administration, CloudOps, and DevOps job postings.
+Access & Networking
 
-The objective is to demonstrate practical experience with a strong concentration of:
+* Client VPN instead of public exposure. The app serves internal employees only — there's no business reason to expose it to the internet, so VPN + private subnets removes an entire attack surface up front.
 
-* AWS
-* Terraform / Infrastructure as Code
-* VPC networking
-* EC2
-* Linux administration
-* IAM
-* Application Load Balancing
-* Auto Scaling
-* RDS
-* S3
-* Systems Manager
-* CloudWatch
-* SNS
-* Secrets Manager
-* Git / GitHub
-* CI/CD
-* backup and recovery
-* troubleshooting
-* scaling
-* cost-aware architecture
-* Python/Boto3 automation
+* Two AZs, six subnets (public / app / db per AZ). Enough for real multi-AZ failover practice without the cost and complexity of a third AZ, which wasn't necessary at this scale.
 
-The goal is to demonstrate the ability to:
-
-> **Design, build, operate, troubleshoot, and evolve an AWS-hosted business workload.**
-
----
-
-# 🏢 Business Scenario
-
-A regional distribution company operates several warehouses and distribution facilities in Georgia.
-
-Approximately **200–300 employees** use an internal web application throughout the workday for tasks such as:
-
-* inventory lookup
-* order processing
-* shipment-status tracking
-* warehouse operations
-* basic internal reporting
-
-The platform is used consistently throughout the business day and experiences heavier demand during:
-
-* month-end processing
-* busy fulfillment periods
-* seasonal demand increases
-
-The company wants to migrate this system into AWS while improving:
-
-* reliability
-* security
-* scalability
-* visibility
-* recoverability
-* infrastructure consistency
-
-The first design runs in **one AWS Region across two Availability Zones**.
+Single NAT Gateway. A deliberate cost tradeoff — outbound-only traffic (patching, dependencies) doesn't need per-AZ redundancy at this stage. Documented as a known resilience gap rather than an oversight.
+Compute & Scaling
+EC2 in an Auto Scaling Group, not a single instance. Private, no public IPs, spans both AZs — gives real hands-on ASG and Linux-operations practice (systemd, bootstrap, log investigation) instead of a single static box.
+Scheduled + dynamic scaling together. Scheduled scaling covers known weekday demand; dynamic scaling (60% CPU target-tracking) covers unpredictable spikes. Using only one wouldn't reflect a realistic production traffic pattern.
+Data Layer
+RDS Multi-AZ MySQL. The workload's relational data (customers, orders, inventory, shipments) has genuine referential structure; Multi-AZ gives automatic failover without hand-rolling replication.
+Secrets Manager for DB credentials. RDS-managed credential rotation means the application never touches a hardcoded credential in source code, Terraform, or EC2 config.
+Security
+Systems Manager Session Manager instead of SSH. No key pairs, no port 22, no inbound management rule at all — removes a classic lateral-movement vector entirely.
+Layered security groups (Client VPN → ALB → App → DB). Each tier only accepts traffic from the tier directly in front of it; the database only ever talks to the application layer.
+CI/CD
+GitHub Actions with AWS OIDC. Temporary, scoped credentials for plan/validate instead of long-lived AWS access keys stored as GitHub secrets. apply is intentionally not automated yet — plan output gets a manual review while trust in the pipeline builds.
 
 ---
 
