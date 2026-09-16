@@ -1,6 +1,7 @@
 # 🚚 Regional Distribution Operations Platform
 
 **Status:** Completed
+
 **Environment status:** The AWS infrastructure was fully deployed, validated, and tested during development, then intentionally destroyed after project completion to prevent ongoing cloud costs. The repository preserves the Terraform, application code, automation, runbooks, and CI/CD configuration required to document and reproduce the environment.
 
 **Focus:** AWS • Terraform • Linux • Networking • Cloud Operations • CI/CD • Monitoring • Troubleshooting
@@ -22,7 +23,7 @@ The company wanted to migrate this system into AWS while improving reliability, 
 ## 🏗️ Architecture
 
 ![Regional Distribution Operations Platform Architecture](docphoto/regional-distribution-operations-platform.png)
-```
+
 
 Supporting services: Terraform, IAM, Systems Manager, CloudWatch, SNS, S3, Secrets Manager, NAT Gateway, Internet Gateway, GitHub Actions.
 
